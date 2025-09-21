@@ -47,7 +47,6 @@ defmodule ExAws.STS.Mixfile do
   defp deps do
     [
       {:mox, ">= 0.0.3", only: :test},
-      {:briefly, ">= 0.0.3", only: :test},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:hackney, ">= 0.0.0", only: [:dev, :test]},
       {:sweet_xml, ">= 0.0.0", only: [:dev, :test]},

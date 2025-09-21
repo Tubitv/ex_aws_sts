@@ -84,6 +84,37 @@ config :ex_aws,
   awscli_auth_adapter: ExAws.STS.AuthCache.AssumeRoleWebIdentityAdapter
 ```
 
+### Using Pod Identity tokens from ENV vars
+
+For AWS EKS Pod Identity authentication, you can use the Pod Identity adapter that retrieves credentials directly from the container credentials endpoint. It uses the following environment variables:
+
+`AWS_CONTAINER_CREDENTIALS_FULL_URI`: full URI of the container credentials endpoint
+`AWS_CONTAINER_AUTHORIZATION_TOKEN_FILE`: path to the file containing the authorization token
+
+**Note**: If `AWS_CONTAINER_CREDENTIALS_FULL_URI` is not set or is `nil`, the adapter will return an empty map, allowing the authentication to fall back to other methods.
+
+```elixir
+config :ex_aws,
+  secret_access_key: [{:awscli, "profile_name", 30}],
+  access_key_id: [{:awscli, "profile_name", 30}],
+  awscli_auth_adapter: ExAws.STS.AuthCache.AssumeRolePodIdentityAdapter
+```
+
+You can also inject these values directly via configuration:
+
+```elixir
+config :ex_aws,
+  access_key_id: [{:awscli, "default", 30}],
+  secret_access_key: [{:awscli, "default", 30}],
+  awscli_auth_adapter: ExAws.STS.AuthCache.AssumeRolePodIdentityAdapter,
+  awscli_credentials: %{
+    "default" => %{
+      container_credentials_uri: "http://169.254.170.2/v2/credentials/12345678-1234-1234-1234-123456789012",
+      container_authorization_token_file: "/var/run/secrets/eks.amazonaws.com/serviceaccount/token"
+    }
+  }
+```
+
 ## License
 
 The MIT License (MIT)
