@@ -10,13 +10,14 @@ defmodule ExAws.STS.AuthCache.AssumeRoleWebIdentityAdapterTest do
   @expiration 30_000
 
   setup do
-    {:ok, path} = Briefly.create()
+    path = Path.join(System.tmp_dir!(), "web_identity_token_#{System.unique_integer()}")
     File.write!(path, @web_identity_token)
 
     System.put_env("AWS_WEB_IDENTITY_TOKEN_FILE", path)
     System.put_env("AWS_ROLE_ARN", @role_arn)
 
     on_exit(fn ->
+      File.rm_rf(path)
       System.delete_env("AWS_WEB_IDENTITY_TOKEN_FILE")
       System.delete_env("AWS_ROLE_ARN")
     end)
